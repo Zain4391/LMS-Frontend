@@ -36,10 +36,11 @@ export function useFinesByUser(userId: number, params?: PaginationParams) {
   })
 }
 
-export function useFinesByStatus(status: FineStatus, params?: PaginationParams) {
+export function useFinesByStatus(status: FineStatus | 'ALL', params?: PaginationParams) {
   return useQuery({
-    queryKey: KEYS.byStatus(status, params),
-    queryFn: () => finesApi.getFinesByStatus(status, params),
+    queryKey: KEYS.byStatus(status as FineStatus, params),
+    queryFn: () => finesApi.getFinesByStatus(status as FineStatus, params),
+    enabled: !!status && status !== 'ALL',
   })
 }
 

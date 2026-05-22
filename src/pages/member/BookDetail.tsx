@@ -22,6 +22,11 @@ export default function MemberBookDetail() {
 
   const availableCopies = copies.filter((c) => c.status === 'AVAILABLE')
 
+  // Derive display status from actual copy availability once copies are loaded
+  const displayStatus = copiesData !== undefined
+    ? (availableCopies.length > 0 ? 'AVAILABLE' : 'UNAVAILABLE')
+    : book?.status ?? 'AVAILABLE'
+
   function handleBorrow(copyId: number) {
     if (!user) return
     const today = new Date().toISOString().split('T')[0]
@@ -57,7 +62,7 @@ export default function MemberBookDetail() {
             {book.authors.map((a) => a.name).join(', ') || 'Unknown author'}
           </p>
           <div className="flex flex-wrap gap-2">
-            <StatusBadge value={book.status} />
+            <StatusBadge value={displayStatus} />
             {book.genres.map((g) => (
               <span key={g.id} className="rounded-full bg-muted px-2.5 py-0.5 text-xs">{g.name}</span>
             ))}

@@ -28,10 +28,11 @@ export function useBorrowsByUser(userId: number, params?: PaginationParams) {
   })
 }
 
-export function useBorrowsByStatus(status: BorrowStatus, params?: PaginationParams) {
+export function useBorrowsByStatus(status: BorrowStatus | 'ALL', params?: PaginationParams) {
   return useQuery({
-    queryKey: KEYS.byStatus(status, params),
-    queryFn: () => borrowApi.getBorrowsByStatus(status, params),
+    queryKey: KEYS.byStatus(status as BorrowStatus, params),
+    queryFn: () => borrowApi.getBorrowsByStatus(status as BorrowStatus, params),
+    enabled: !!status && status !== 'ALL',
   })
 }
 
@@ -43,7 +44,11 @@ export function useCreateBorrow() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: BorrowedRequest) => borrowApi.createBorrow(data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: KEYS.all }); toast.success('Book borrowed successfully') },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEYS.all })
+      qc.invalidateQueries({ queryKey: ['book-copies'] })
+      toast.success('Book borrowed successfully')
+    },
     onError: () => toast.error('Failed to borrow book'),
   })
 }
@@ -52,7 +57,11 @@ export function useReturnBorrow() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: number) => borrowApi.returnBorrow(id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: KEYS.all }); toast.success('Book returned successfully') },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEYS.all })
+      qc.invalidateQueries({ queryKey: ['book-copies'] })
+      toast.success('Book returned successfully')
+    },
     onError: () => toast.error('Failed to return book'),
   })
 }

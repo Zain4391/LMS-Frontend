@@ -37,17 +37,19 @@ export function usePaymentsByFine(fineId: number, params?: PaginationParams) {
   })
 }
 
-export function usePaymentsByStatus(status: PaymentStatus, params?: PaginationParams) {
+export function usePaymentsByStatus(status: PaymentStatus | 'ALL', params?: PaginationParams) {
   return useQuery({
-    queryKey: KEYS.byStatus(status, params),
-    queryFn: () => paymentsApi.getPaymentsByStatus(status, params),
+    queryKey: KEYS.byStatus(status as PaymentStatus, params),
+    queryFn: () => paymentsApi.getPaymentsByStatus(status as PaymentStatus, params),
+    enabled: !!status && status !== 'ALL',
   })
 }
 
-export function usePaymentsByMethod(method: PaymentMethod, params?: PaginationParams) {
+export function usePaymentsByMethod(method: PaymentMethod | '', params?: PaginationParams) {
   return useQuery({
-    queryKey: KEYS.byMethod(method, params),
-    queryFn: () => paymentsApi.getPaymentsByMethod(method, params),
+    queryKey: KEYS.byMethod(method as PaymentMethod, params),
+    queryFn: () => paymentsApi.getPaymentsByMethod(method as PaymentMethod, params),
+    enabled: !!method,
   })
 }
 
